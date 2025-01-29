@@ -34,6 +34,7 @@ export type ChatState = "Sending" | "Waiting";
     public  entries: (IQuestion | IAnswer)[] = [];
     public enableSendingQuestion: boolean = true;
     public state: ChatState = 'Sending';
+    public isAnsweringStopped: boolean = false;
 
     constructor(private chatService: ChatService) {}
 
@@ -67,6 +68,9 @@ export type ChatState = "Sending" | "Waiting";
     this.sendMessage(question);
   }
 
+  onStopAnsweringButtonClicked() {
+    this.isAnsweringStopped = true;
+  }
 
   pushQuestion(question: string) {
     this.entries.push({
@@ -75,44 +79,56 @@ export type ChatState = "Sending" | "Waiting";
   }
 
 
-  pushAnswerLetterByLetter(answer: GenerateAnswerResponse) {
+  async pushAnswerLetterByLetter(answer: GenerateAnswerResponse) {
+    this.state = 'Waiting';
+    this.isAnsweringStopped = false;
     this.entries.push({
-      id: answer.id,
-      content: []
+        id: answer.id,
+        content: []
     });
 
-    let totalDelay = 0; 
-    const deleteBetweenLetters = 10;
-    const deleteBetweenSections = 500;
+    let charCount = 0;
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    answer.sectionList.forEach((section, sectionIndex) => {
-      this.castToArray(this.entries[this.entries.length - 1].content).push('');
-      
-      let sectionDelay = totalDelay; 
+    for (let sectionIndex = 0; sectionIndex < answer.sectionList.length; sectionIndex++) {
+        
 
-      section.split('').forEach((char, charIndex) => {
-        setTimeout(() => {
-          this.castToArray(this.entries[this.entries.length - 1].content)[sectionIndex] += char;
-        }, sectionDelay + charIndex * deleteBetweenLetters);
+        this.castToArray(this.entries[this.entries.length - 1].content).push('');
+        for (const char of answer.sectionList[sectionIndex]) {
+            if (this.isAnsweringStopped) break;
+
+            this.castToArray(this.entries[this.entries.length - 1].content)[sectionIndex] += char;
+            charCount++;
+            await delay(10);
+        }
+        if (this.isAnsweringStopped) break;
+        charCount += 2; // Dodajemy 2 znaki za "\n\n"
+        await delay(500); // Pauza między sekcjami
+    }
+
+    if(this.isAnsweringStopped) {
+      this.chatService.truncateAnswer(answer.id, charCount).subscribe({
+        next: () => console.log('Operacja przerwana!'),
+        error: (err) => console.error('Błąd:', err)
       });
+      this.isAnsweringStopped = false;
+    }
 
-      totalDelay += section.length * deleteBetweenLetters + deleteBetweenSections; // Dodatkowe 500ms pauzy między sekcjami
-    });
-  }
+
+    this.state = 'Sending';
+    
+
+
+}
 
   sendMessage(question: string) {
     if (!question.trim()) return;
-    this.state = 'Waiting';
     this.chatService.generateAnswer(question).subscribe({
       next: (data) => {
         this.pushQuestion(question);
         this.pushAnswerLetterByLetter(data);
-        this.state = 'Sending';
       } ,
       error: (err) => console.error('Błąd:', err),
-      complete: () => {
-        
-      }
     });
   }
 

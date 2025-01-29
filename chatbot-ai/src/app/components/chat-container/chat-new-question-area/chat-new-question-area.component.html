@@ -2,10 +2,10 @@
   <mat-form-field appearance="outline">
     <mat-label>Twoje pytanie</mat-label>
     <textarea matInput [(ngModel)]="question" placeholder="Wpisz swoje pytanie..." ></textarea>
-    <button mat-fab (click)="sendQuestion()" *ngIf="state ==='Sending'">
+    <button mat-fab (click)="sendQuestion()" *ngIf="state ==='Sending'" [disabled]="question.length < 3">
       <mat-icon>send</mat-icon>
     </button>
-    <button  mat-fab *ngIf="state ==='Waiting'">
+    <button  mat-fab (click)="stopAnswering()" *ngIf="state ==='Waiting'">
       <mat-icon>cancel</mat-icon>
     </button>
   </mat-form-field>

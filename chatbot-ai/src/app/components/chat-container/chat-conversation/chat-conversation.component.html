@@ -5,7 +5,7 @@
   </ng-container>
 </mat-card-content>
 <mat-card-footer>
-  <chat-new-question-area [state]=state (buttonClicked)="onSendQuestionButtonClicked($event)"></chat-new-question-area>
+  <chat-new-question-area [state]=state (sendButtonClicked)="onSendQuestionButtonClicked($event)" (stopButtonClicked)="onStopAnsweringButtonClicked()"></chat-new-question-area>
 </mat-card-footer>
 
 

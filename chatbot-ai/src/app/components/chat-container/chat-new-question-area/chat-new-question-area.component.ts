@@ -17,11 +17,17 @@ import { ChatState } from '../chat-conversation/chat-conversation.component';
 
   export class ChatNewQuestionAreaComponent {
     question: string = '';
-    @Output() buttonClicked = new EventEmitter<string>(); 
+    @Output() sendButtonClicked = new EventEmitter<string>(); 
+    @Output() stopButtonClicked = new EventEmitter<boolean>(); 
     @Input() public state!: ChatState;
 
     sendQuestion() {
-      this.buttonClicked.emit(this.question); 
+      this.sendButtonClicked.emit(this.question); 
       this.question = "";
     }
+
+    stopAnswering() {
+      this.stopButtonClicked.emit(true);
+    }
+
   }

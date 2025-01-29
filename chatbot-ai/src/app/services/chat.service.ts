@@ -18,4 +18,8 @@ export class ChatService {
   rateAnswer(id: number, rating?: boolean): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}rate`, { id, rating });
   }
+
+  truncateAnswer(id: number, displayedCharactersCount: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}truncate`, { id, displayedCharactersCount });
+  }
 }
