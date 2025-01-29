@@ -1,0 +1,25 @@
+:host {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 15px;
+}
+
+.image {
+    background-image: url('/assets/person-icon.png');
+    background-size: cover;
+    margin-left: 15px;
+  }
+
+  .mat-mdc-card-avatar {
+    margin-bottom: 0;
+  }
+
+  mat-card {
+    background-color: #DDD;
+  }
+
+  .question {
+    color: #2258a0;
+    font-style: italic;
+  }

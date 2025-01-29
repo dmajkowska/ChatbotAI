@@ -1,0 +1,8 @@
+obj/
+bin/
+.angular/
+dist/
+node_modules/
+.vs/
+*.editorconfig
+package-lock.json

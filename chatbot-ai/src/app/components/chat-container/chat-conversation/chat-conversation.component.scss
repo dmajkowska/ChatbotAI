@@ -1,0 +1,28 @@
+
+:host {
+    width: 100%;
+    display: flex;
+    max-height: 700px;
+    
+    
+    flex-direction: column;
+ }
+
+ mat-card-content {
+  overflow-y: scroll;
+  min-height: 566px;
+  width: 100%;
+  padding: 0;
+}
+
+chat-new-question-area {
+  display: flex;
+
+}
+
+mat-card-footer {
+  width: 100%;
+ }
+ 
+
+
