@@ -15,5 +15,7 @@ namespace ChatbotAI.API.Domain.Entities.Persistence
         public bool? Rating { get; set; } = null;
         [Column("created")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [Column("interrupted")]
+        public DateTime? InterrupteddAt { get; set; }
     }
 }

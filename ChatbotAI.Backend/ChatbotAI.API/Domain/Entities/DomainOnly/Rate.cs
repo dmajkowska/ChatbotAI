@@ -9,7 +9,7 @@ namespace ChatbotAI.API.Domain.Entities.DomainOnly
 
         public Rate(int id, bool? rate)
         {
-            if (id <= 0) throw new DomainException("Identyfikator nie może być ujemny");
+            if (id <= 0) throw new DomainException("Identyfikator nie może być ujemny ani równy zero.");
             Id = id;
             Rating = rate;
         }

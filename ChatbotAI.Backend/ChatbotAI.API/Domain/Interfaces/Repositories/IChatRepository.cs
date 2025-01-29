@@ -6,5 +6,6 @@ namespace ChatbotAI.API.Domain.Interfaces.Repositories
     {
         Task AddAsync(ChatInteraction chat);
         Task UpdateRatingAsync(int id, bool? newRating);
+        Task TruncateAnswerAsync(int id, int displayedCharactersCount);
     }
 }
