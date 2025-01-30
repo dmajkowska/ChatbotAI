@@ -45,5 +45,14 @@ npm start
 ```
 * otwieramy aplikację na stronie internetowej http://localhost:4200/
 
+## Zrzuty ekranu
+
+Poniżej znajdują się zrzuty ekranu GUI oraz tabeli z danymi:
+
+![Widok okna głównego](screenshots/chat.png)
+
+![Ocena odpowiedzi](screenshots/rating.png)
+
+![Widok danych w Sql Server Management Studio](screenshots/db.png)
 
 Copyright 2025 @ Dagna Majkowska
