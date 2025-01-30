@@ -9,6 +9,4 @@ import { MatCardModule } from '@angular/material/card';
     imports: [MatCardModule]
   })
 
-  export class ChatHeaderComponent {
-
-  }
+export class ChatHeaderComponent {}

@@ -1,39 +1,38 @@
 <div class="question">
   <mat-card appearance="outlined">
     <mat-card-content>{{entry.question}}</mat-card-content>
-</mat-card>
-
-<div mat-card-avatar class="image"></div>
+  </mat-card>
+  <div mat-card-avatar class="image"></div>
 </div>
+
 <div class="answer">
   <div mat-card-avatar class="image" ></div>
-
   <mat-card  appearance="outlined">
-      <mat-card-content>
-          <p *ngFor="let paragraph of entry.answer">
-              {{paragraph}}
-          </p>
-      </mat-card-content>
-      <mat-card-actions>
-          <!-- Ikona otwierająca menu -->
-          <button mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon *ngIf="grade == true" class="like">sentiment_satisfied</mat-icon>
-            <mat-icon *ngIf="grade == null" class="neutral">sentiment_neutral</mat-icon>
-            <mat-icon *ngIf="grade == false" class="dislike">sentiment_dissatisfied</mat-icon>
-          </button>
-      
-          <!-- Definicja menu -->
-          <mat-menu #menu="matMenu" class="small-menu">
-            <button mat-menu-item (click)="sendGrade(true)">
-              <mat-icon>sentiment_satisfied</mat-icon>
-            </button>
-            <button mat-menu-item (click)="sendGrade(undefined)">
-              <mat-icon>sentiment_neutral</mat-icon>
-            </button>
-            <button mat-menu-item (click)="sendGrade(false)">
-              <mat-icon>sentiment_dissatisfied</mat-icon>
-            </button>
-          </mat-menu>
-        </mat-card-actions>
+    <mat-card-content>
+      <p *ngFor="let paragraph of entry.answer">
+          {{paragraph}}
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <!-- Ikona otwierająca menu -->
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon *ngIf="grade == true" class="like">sentiment_satisfied</mat-icon>
+        <mat-icon *ngIf="grade == null" class="neutral">sentiment_neutral</mat-icon>
+        <mat-icon *ngIf="grade == false" class="dislike">sentiment_dissatisfied</mat-icon>
+      </button>
+    
+      <!-- Definicja menu -->
+      <mat-menu #menu="matMenu" class="small-menu">
+        <button mat-menu-item (click)="sendGrade(true)">
+          <mat-icon>sentiment_satisfied</mat-icon>
+        </button>
+        <button mat-menu-item (click)="sendGrade(undefined)">
+          <mat-icon>sentiment_neutral</mat-icon>
+        </button>
+        <button mat-menu-item (click)="sendGrade(false)">
+          <mat-icon>sentiment_dissatisfied</mat-icon>
+        </button>
+      </mat-menu>
+    </mat-card-actions>
   </mat-card>  
 </div>

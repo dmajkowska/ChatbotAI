@@ -1,12 +1,13 @@
 <mat-card-content #scrollContainer>
   <ng-container *ngFor="let entry of entries; let i = index" #lastMessage>
     <chat-interaction [entry]="entry" [id]="entry.id"></chat-interaction>
-<!--     <chat-question-section [content]="castToString(entry.content)" *ngIf="isQuestion(entry)" ></chat-question-section>
-    <chat-answer-section   [content]="castToArray(entry.content)" [id]="castToAnswer(entry).id" *ngIf="!isQuestion(entry)" ></chat-answer-section> -->
   </ng-container>
 </mat-card-content>
 <mat-card-footer>
-  <chat-new-question-area [state]=state (sendButtonClicked)="onSendQuestionButtonClicked($event)" (stopButtonClicked)="onStopAnsweringButtonClicked()"></chat-new-question-area>
+  <chat-new-question-area [state]=state 
+      (sendButtonClicked)="onSendQuestionButtonClicked($event)" 
+      (stopButtonClicked)="onStopAnsweringButtonClicked()">
+  </chat-new-question-area>
 </mat-card-footer>
 
 

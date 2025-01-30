@@ -5,7 +5,6 @@ using ChatbotAI.API.Domain.Exceptions;
 using ChatbotAI.API.Domain.Interfaces.Repositories;
 using ChatbotAI.API.Domain.Interfaces.Services;
 using MediatR;
-using System;
 
 namespace ChatbotAI.API.Application.Command.GenerateAnswer
 {
@@ -40,14 +39,12 @@ namespace ChatbotAI.API.Application.Command.GenerateAnswer
 
             await _chatRepository.AddAsync(chat);
 
-
             var response = new GenerateAnswerResponse()
             {
                 Id = chat.Id,
                 Question = question.Content,
                 SectionList = answer
             };
-
 
             return response;
         }

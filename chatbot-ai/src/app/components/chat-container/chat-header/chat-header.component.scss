@@ -1,13 +1,11 @@
 
 :host {
     width: 100%;
-    display: flex;
-    
- }
+    display: flex;  
+}
 
- 
- .header-image {
+.header-image {
    background-image: url('/assets/robo-icon.png'); 
    background-size: cover;
-  }
+}
 

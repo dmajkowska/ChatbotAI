@@ -1,45 +1,44 @@
 .answer {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin: 35px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 35px;
 
-    .image {
-      background-image: url('/assets/robo-icon.png');
-      background-size: cover;
-      margin-right: 15px;
-    }
-  
-    mat-card {
-      width: 100%;
-    }
-  
-    mat-card-content {
-      margin-top: -16px;
-    }
-  
-    mat-card-actions {
-      display: flex;
-      justify-content: flex-end;
-    }
-  
-   
-    ::ng-deep .small-menu.mat-mdc-menu-panel {
-      min-width: 48px !important;
-      width: auto !important;
-    }
-  
-   .like {
+  .image {
+    background-image: url('/assets/robo-icon.png');
+    background-size: cover;
+    margin-right: 15px;
+  }
+
+  mat-card {
+    width: 100%;
+  }
+
+  mat-card-content {
+    margin-top: -16px;
+  }
+
+  mat-card-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  ::ng-deep .small-menu.mat-mdc-menu-panel {
+    min-width: 48px !important;
+    width: auto !important;
+  }
+
+  .like {
     color: #15c70f;
-   }
-  
-   .dislike {
+  }
+
+  .dislike {
     color: #db0e0e;
-   }
-  
-   .neutral {
+  }
+
+  .neutral {
     color: #555555;
-   }
+  }
 }
 
 .question {

@@ -5,7 +5,6 @@ using ChatbotAI.API.Contract.GenerateAnswer;
 using ChatbotAI.API.Contract.RateAnswer;
 using ChatbotAI.API.Contract.TruncateAnswer;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatbotAI.API.Controllers
@@ -14,7 +13,6 @@ namespace ChatbotAI.API.Controllers
     [Route("api/[controller]")]
     public class ChatController: ControllerBase
     {
-
         private readonly IMediator _mediator;
 
         public ChatController(IMediator mediator)
