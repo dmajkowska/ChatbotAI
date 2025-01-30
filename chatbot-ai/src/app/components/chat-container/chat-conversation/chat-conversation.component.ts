@@ -18,9 +18,9 @@ export type ChatState = "Sending" | "Waiting";
   })
 
   export class ChatConversationComponent {
-    @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
-    @ViewChildren('lastMessage') private lastMessage!: QueryList<ElementRef>;
-
+    @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef;
+    private isUserScrolling = false;
+    private observer!: MutationObserver;
     public  entries: IChatPair[] = [];
     public enableSendingQuestion: boolean = true;
     public state: ChatState = 'Sending';
@@ -28,9 +28,31 @@ export type ChatState = "Sending" | "Waiting";
 
     constructor(private chatService: ChatService) {}
 
-  ngAfterViewChecked() {
-    this.scrollToBottom();
-  }
+    ngAfterViewInit() {
+      this.setupMutationObserver();
+      this.setupScrollListener();
+    }
+
+    private setupMutationObserver() {
+      if (typeof MutationObserver === 'undefined') return; 
+  
+      this.observer = new MutationObserver(() => {
+        if (!this.isUserScrolling) {
+          this.scrollToBottom();
+        }
+      });
+  
+      this.observer.observe(this.scrollContainer.nativeElement, { childList: true, subtree: true });
+    }
+  
+    private setupScrollListener() {
+      const container = this.scrollContainer.nativeElement;
+      container.addEventListener('scroll', () => {
+        const isAtBottom =
+          container.scrollHeight - container.scrollTop <= container.clientHeight + 10;
+        this.isUserScrolling = !isAtBottom; 
+      });
+    }
 
   onSendQuestionButtonClicked(question: string) {
     this.sendMessage(question);
@@ -58,16 +80,16 @@ export type ChatState = "Sending" | "Waiting";
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
     for (let sectionIndex = 0; sectionIndex < response.sectionList.length; sectionIndex++) {
-        this.entries[this.entries.length - 1].answer.push('');
-        for (const char of response.sectionList[sectionIndex]) {
-            if (this.isAnsweringStopped) break;
-            this.entries[this.entries.length - 1].answer[sectionIndex] += char;
-            charCount++;
-            await delay(10);
-        }
+      this.entries[this.entries.length - 1].answer.push('');
+      for (const char of response.sectionList[sectionIndex]) {
         if (this.isAnsweringStopped) break;
-        charCount += 2; // Dodajemy 2 znaki za "\n\n"
-        await delay(500); // Pauza między sekcjami
+        this.entries[this.entries.length - 1].answer[sectionIndex] += char;
+        charCount++;
+        await delay(10);
+      }
+      if (this.isAnsweringStopped) break;
+      charCount += 2; // Dodajemy 2 znaki za "\n\n"
+      await delay(500); // Pauza między sekcjami
     }
 
     if(this.isAnsweringStopped) {
@@ -90,7 +112,9 @@ export type ChatState = "Sending" | "Waiting";
     });
   }
 
-  private scrollToBottom() {
-    this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+private scrollToBottom() {
+    setTimeout(() => {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    }, 0);
   }
 }
