@@ -1,5 +1,5 @@
 export interface GenerateAnswerResponse {
     id: number;
-    Question: string;
+    question: string;
     sectionList: string[];
 }

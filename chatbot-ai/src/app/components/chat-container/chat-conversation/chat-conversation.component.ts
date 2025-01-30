@@ -1,21 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { ChatQuestionSection } from './chat-question-section/chat-question-section.component';
-import { ChatAnswerSection, ReactionType } from './chat-answer-section/chat-answer-section.component';
 import { ChatNewQuestionAreaComponent } from '../chat-new-question-area/chat-new-question-area.component';
-import { HttpClientModule } from '@angular/common/http';
 import { ChatService } from '../../../services/chat.service';
 import { GenerateAnswerResponse } from '../../../model/generate-answer/generate-answer.response';
-
-interface IQuestion {
-  content: string;
-}
-
-interface IAnswer {
-  id: number;
-  content: string[];
-}
+import { ChatInteraction } from './chat-interaction/chat-interaction.component';
+import { IChatPair } from '../../../model/chat-pair';
 
 export type ChatState = "Sending" | "Waiting";
 
@@ -24,14 +14,14 @@ export type ChatState = "Sending" | "Waiting";
     templateUrl: './chat-conversation.component.html',
     styleUrls: ['./chat-conversation.component.scss'], 
     standalone: true,
-    imports: [MatCardModule, CommonModule,ChatQuestionSection, ChatAnswerSection, ChatNewQuestionAreaComponent]
+    imports: [MatCardModule, CommonModule,ChatInteraction, ChatNewQuestionAreaComponent]
   })
 
   export class ChatConversationComponent {
     @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
     @ViewChildren('lastMessage') private lastMessage!: QueryList<ElementRef>;
 
-    public  entries: (IQuestion | IAnswer)[] = [];
+    public  entries: IChatPair[] = [];
     public enableSendingQuestion: boolean = true;
     public state: ChatState = 'Sending';
     public isAnsweringStopped: boolean = false;
@@ -40,28 +30,6 @@ export type ChatState = "Sending" | "Waiting";
 
   ngAfterViewChecked() {
     this.scrollToBottom();
-  }
-  
-  isQuestion(entry: IAnswer | IQuestion): boolean  {
-     return !Array.isArray(entry.content);
-  }
-
-  castToQuestion(entry: IAnswer | IQuestion): IQuestion {
-    return entry as IQuestion;
-  }
-
-  castToAnswer(entry: IAnswer | IQuestion): IAnswer {
-    return entry as IAnswer;
-  }
-
-  castToArray(content: string | string[]): string[] {
-    return Array.isArray(content) ? content : [];
-  }
-
- 
-      
-  castToString(content: string | string[]): string {
-    return !Array.isArray(content) ? content : '';
   }
 
   onSendQuestionButtonClicked(question: string) {
@@ -72,32 +40,28 @@ export type ChatState = "Sending" | "Waiting";
     this.isAnsweringStopped = true;
   }
 
-  pushQuestion(question: string) {
-    this.entries.push({
-      content: question
-    })
-  }
 
-
-  async pushAnswerLetterByLetter(answer: GenerateAnswerResponse) {
+  async pushChatPair(response: GenerateAnswerResponse) {
     this.state = 'Waiting';
     this.isAnsweringStopped = false;
-    this.entries.push({
-        id: answer.id,
-        content: []
-    });
+
+    const entry: IChatPair = {
+      id: response.id,
+      question: response.question,
+      answer: [],
+      rating: undefined
+    };
+
+    this.entries.push(entry);
 
     let charCount = 0;
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    for (let sectionIndex = 0; sectionIndex < answer.sectionList.length; sectionIndex++) {
-        
-
-        this.castToArray(this.entries[this.entries.length - 1].content).push('');
-        for (const char of answer.sectionList[sectionIndex]) {
+    for (let sectionIndex = 0; sectionIndex < response.sectionList.length; sectionIndex++) {
+        this.entries[this.entries.length - 1].answer.push('');
+        for (const char of response.sectionList[sectionIndex]) {
             if (this.isAnsweringStopped) break;
-
-            this.castToArray(this.entries[this.entries.length - 1].content)[sectionIndex] += char;
+            this.entries[this.entries.length - 1].answer[sectionIndex] += char;
             charCount++;
             await delay(10);
         }
@@ -107,26 +71,20 @@ export type ChatState = "Sending" | "Waiting";
     }
 
     if(this.isAnsweringStopped) {
-      this.chatService.truncateAnswer(answer.id, charCount).subscribe({
+      this.chatService.truncateAnswer(entry.id, charCount).subscribe({
         next: () => console.log('Operacja przerwana!'),
         error: (err) => console.error('Błąd:', err)
       });
       this.isAnsweringStopped = false;
     }
-
-
     this.state = 'Sending';
-    
-
-
 }
 
   sendMessage(question: string) {
     if (!question.trim()) return;
     this.chatService.generateAnswer(question).subscribe({
-      next: (data) => {
-        this.pushQuestion(question);
-        this.pushAnswerLetterByLetter(data);
+      next: (response) => {
+        this.pushChatPair(response);
       } ,
       error: (err) => console.error('Błąd:', err),
     });
