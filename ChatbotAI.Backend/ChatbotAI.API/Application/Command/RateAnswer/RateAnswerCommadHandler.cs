@@ -8,11 +8,11 @@ namespace ChatbotAI.API.Application.Command.RateAnswer
 {
     public class RateAnswerCommadHandler : IRequestHandler<RateAnswerCommand>
     {
-        private readonly IChatRepository _chatRepository;
+        private readonly IChatbotRepository _chatbotRepository;
 
-        public RateAnswerCommadHandler(IChatRepository chatRepository, IChatService chatService)
+        public RateAnswerCommadHandler(IChatbotRepository chatRepository, IChatbotService chatService)
         {
-            _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
+            _chatbotRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
         }
 
         public async Task Handle(RateAnswerCommand request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ namespace ChatbotAI.API.Application.Command.RateAnswer
                 throw new DomainException("Nie rozpoznano odpowiedzi");
             }
 
-            await _chatRepository.UpdateRatingAsync(rate.Id, rate.Rating);
+            await _chatbotRepository.UpdateRatingAsync(rate.Id, rate.Rating);
         }
     }
 }

@@ -1,13 +1,13 @@
 <mat-card-content #scrollContainer>
   <ng-container *ngFor="let entry of entries; let i = index" #lastMessage>
-    <chat-interaction [entry]="entry" [id]="entry.id"></chat-interaction>
+    <chatbot-interaction [entry]="entry" [id]="entry.id"></chatbot-interaction>
   </ng-container>
 </mat-card-content>
 <mat-card-footer>
-  <chat-new-question-area [state]=state 
+  <chatbot-new-question-area [state]=state 
       (sendButtonClicked)="onSendQuestionButtonClicked($event)" 
       (stopButtonClicked)="onStopAnsweringButtonClicked()">
-  </chat-new-question-area>
+  </chatbot-new-question-area>
 </mat-card-footer>
 
 

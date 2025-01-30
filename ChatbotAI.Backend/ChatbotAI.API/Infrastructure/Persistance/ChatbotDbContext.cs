@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChatbotAI.API.Infrastructure.Persistance
 {
-    public class ApplicationDbContext : DbContext
+    public class ChatbotDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public ChatbotDbContext(DbContextOptions<ChatbotDbContext> options) : base(options) { }
 
-        public DbSet<ChatInteraction> ChatInteractions { get; set; }
+        public DbSet<ChatbotInteraction> ChatInteractions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
     }
 }

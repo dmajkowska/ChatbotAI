@@ -2,9 +2,9 @@
 
 namespace ChatbotAI.API.Domain.Interfaces.Repositories
 {
-    public interface IChatRepository
+    public interface IChatbotRepository
     {
-        Task AddAsync(ChatInteraction chat);
+        Task AddAsync(ChatbotInteraction chat);
         Task UpdateRatingAsync(int id, bool? newRating);
         Task TruncateAnswerAsync(int id, int displayedCharactersCount);
     }

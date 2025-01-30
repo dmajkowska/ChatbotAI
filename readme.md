@@ -27,7 +27,7 @@ Chatbot-AI to aplikacja, która symuluje prostego asystenta AI. Dostępne funkcj
 * Po uruchomieniu backendu baza powinna utworzyć się automatycznie, nic nie trzeba dodatkowo robić
 * w celu zweryfikowania poprawności działania bazy danych uruchom Microsoft SQL Management Studio połącz się z serwerem bazy danych zgodnie z 
 * powinny się utworzyć baza danych o nazwie chatbot_dmajkowska zawierająca pustą tabelę dbo.chat
-* tabela dbo.chat powinna zawierać następujące kolumny oraz primary key 
+* tabela dbo.chatbot powinna zawierać następujące kolumny oraz primary key 
   * [id] [int] IDENTITY(1,1) NOT NULL,
   * [question] [nvarchar](500) NOT NULL,
   * [answer] [nvarchar](max) NOT NULL,
@@ -56,3 +56,5 @@ Poniżej znajdują się zrzuty ekranu GUI oraz tabeli z danymi:
 ![Widok danych w Sql Server Management Studio](screenshots/db.png)
 
 Copyright 2025 @ Dagna Majkowska
+
+

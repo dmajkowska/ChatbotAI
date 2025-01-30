@@ -5,21 +5,21 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-import { ChatState } from '../chat-conversation/chat-conversation.component';
+import { ChatbotState } from '../chatbot-conversation.component';
 
 @Component({
-  selector: 'chat-new-question-area',
-  templateUrl: './chat-new-question-area.component.html',
-  styleUrls: ['./chat-new-question-area.component.scss'], 
+  selector: 'chatbot-new-question-area',
+  templateUrl: './chatbot-new-question-area.component.html',
+  styleUrls: ['./chatbot-new-question-area.component.scss'], 
   standalone: true,
   imports: [MatCardModule, MatInputModule, MatFormFieldModule,  MatIconModule, CommonModule, FormsModule]
 })
 
-export class ChatNewQuestionAreaComponent {
+export class ChatbotNewQuestionAreaComponent {
   question: string = '';
   @Output() sendButtonClicked = new EventEmitter<string>(); 
   @Output() stopButtonClicked = new EventEmitter<boolean>(); 
-  @Input() public state!: ChatState;
+  @Input() public state!: ChatbotState;
 
   sendQuestion() {
     this.sendButtonClicked.emit(this.question); 

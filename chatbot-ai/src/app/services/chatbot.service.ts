@@ -6,8 +6,8 @@ import { GenerateAnswerResponse } from '../model/generate-answer/generate-answer
 @Injectable({
   providedIn: 'root'
 })
-export class ChatService {
-  private apiUrl = 'https://localhost:7004/api/chat/'; 
+export class ChatbotService {
+  private apiUrl = 'https://localhost:7004/api/chatbot/'; 
 
   constructor(private http: HttpClient) {}
 

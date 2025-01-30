@@ -1,6 +1,6 @@
 ﻿namespace ChatbotAI.API.Domain.Interfaces.Services
 {
-    public interface IChatService
+    public interface IChatbotService
     {
         Task<List<string>> GenerateRandomAnswerAsync();
     }

@@ -1,9 +1,9 @@
 ﻿using ChatbotAI.API.Domain.Interfaces.Services;
 using LoremNET;
 
-namespace ChatbotAI.API.Infrastructure.Persistance.Services
+namespace ChatbotAI.API.Application.Services
 {
-    public class ChatService: IChatService
+    public class ChatbotService : IChatbotService
     {
         public async Task<List<string>> GenerateRandomAnswerAsync()
         {

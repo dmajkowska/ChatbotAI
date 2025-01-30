@@ -2,8 +2,8 @@
 
 namespace ChatbotAI.API.Domain.Entities.Persistence
 {
-    [Table("chat")]
-    public class ChatInteraction
+    [Table("chatbot")]
+    public class ChatbotInteraction
     {
         [Column("id")]
         public int Id { get; set; }

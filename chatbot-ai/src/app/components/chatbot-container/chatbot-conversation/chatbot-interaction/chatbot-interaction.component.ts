@@ -4,8 +4,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule} from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { ChatService } from '../../../../services/chat.service';
-import { IChatPair } from '../../../../model/chat-pair';
+import { ChatbotService } from '../../../../services/chatbot.service';
+import { IChatbotPair } from '../../../../model/chatbot-pair';
 
 
 
@@ -17,25 +17,25 @@ export enum ReactionType {
 
 
 @Component({
-    selector: 'chat-interaction',
-    templateUrl: './chat-interaction.component.html',
-    styleUrls: ['./chat-interaction.component.scss'], 
+    selector: 'chatbot-interaction',
+    templateUrl: './chatbot-interaction.component.html',
+    styleUrls: ['./chatbot-interaction.component.scss'], 
     standalone: true,
     imports: [MatCardModule, MatIconModule, CommonModule, MatMenuModule, MatButtonModule  ]
   })
 
-  export class ChatInteraction{
-    @Input() public entry!: IChatPair;
+  export class ChatbotInteraction{
+    @Input() public entry!: IChatbotPair;
     @Input() public firstAnswerPart: boolean = false;
     @Input() public reaction: ReactionType = ReactionType.None;
 
     public grade?: boolean = undefined;
 
-    constructor(private chatService: ChatService) {}
+    constructor(private chatbotService: ChatbotService) {}
     
     sendGrade(grade?: boolean) {
       this.grade = grade;
-      this.chatService.rateAnswer(this.entry.id, grade).subscribe({
+      this.chatbotService.rateAnswer(this.entry.id, grade).subscribe({
         next: () => console.log('Ocena wysłana!'),
         error: (err) => console.error('Błąd:', err)
       });

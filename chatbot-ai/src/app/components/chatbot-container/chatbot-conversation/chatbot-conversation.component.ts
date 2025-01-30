@@ -1,32 +1,33 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { ChatNewQuestionAreaComponent } from '../chat-new-question-area/chat-new-question-area.component';
-import { ChatService } from '../../../services/chat.service';
+import { ChatbotService } from '../../../services/chatbot.service';
 import { GenerateAnswerResponse } from '../../../model/generate-answer/generate-answer.response';
-import { ChatInteraction } from './chat-interaction/chat-interaction.component';
-import { IChatPair } from '../../../model/chat-pair';
+import { ChatbotInteraction } from './chatbot-interaction/chatbot-interaction.component';
+import { ChatbotNewQuestionAreaComponent } from './chatbot-new-question-area/chatbot-new-question-area.component';
+import { IChatbotPair } from '../../../model/chatbot-pair';
 
-export type ChatState = "Sending" | "Waiting";
+
+export type ChatbotState = "Sending" | "Waiting";
 
 @Component({
-    selector: 'chat-conversation',
-    templateUrl: './chat-conversation.component.html',
-    styleUrls: ['./chat-conversation.component.scss'], 
+    selector: 'chatbot-conversation',
+    templateUrl: './chatbot-conversation.component.html',
+    styleUrls: ['./chatbot-conversation.component.scss'], 
     standalone: true,
-    imports: [MatCardModule, CommonModule,ChatInteraction, ChatNewQuestionAreaComponent]
+    imports: [MatCardModule, CommonModule,ChatbotInteraction, ChatbotNewQuestionAreaComponent ]
   })
 
-  export class ChatConversationComponent {
+  export class ChatbotConversationComponent {
     @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef;
     private isUserScrolling = false;
     private observer!: MutationObserver;
-    public  entries: IChatPair[] = [];
+    public  entries: IChatbotPair[] = [];
     public enableSendingQuestion: boolean = true;
-    public state: ChatState = 'Sending';
+    public state: ChatbotState = 'Sending';
     public isAnsweringStopped: boolean = false;
 
-    constructor(private chatService: ChatService) {}
+    constructor(private chatbotService: ChatbotService) {}
 
     ngAfterViewInit() {
       this.setupMutationObserver();
@@ -63,11 +64,11 @@ export type ChatState = "Sending" | "Waiting";
   }
 
 
-  async pushChatPair(response: GenerateAnswerResponse) {
+  async pushChatbotPair(response: GenerateAnswerResponse) {
     this.state = 'Waiting';
     this.isAnsweringStopped = false;
 
-    const entry: IChatPair = {
+    const entry: IChatbotPair = {
       id: response.id,
       question: response.question,
       answer: [],
@@ -93,7 +94,7 @@ export type ChatState = "Sending" | "Waiting";
     }
 
     if(this.isAnsweringStopped) {
-      this.chatService.truncateAnswer(entry.id, charCount).subscribe({
+      this.chatbotService.truncateAnswer(entry.id, charCount).subscribe({
         next: () => console.log('Operacja przerwana!'),
         error: (err) => console.error('Błąd:', err)
       });
@@ -104,9 +105,9 @@ export type ChatState = "Sending" | "Waiting";
 
   sendMessage(question: string) {
     if (!question.trim()) return;
-    this.chatService.generateAnswer(question).subscribe({
+    this.chatbotService.generateAnswer(question).subscribe({
       next: (response) => {
-        this.pushChatPair(response);
+        this.pushChatbotPair(response);
       } ,
       error: (err) => console.error('Błąd:', err),
     });

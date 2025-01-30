@@ -10,13 +10,13 @@ namespace ChatbotAI.API.Application.Command.GenerateAnswer
 {
     public class GenerateAnswerCommadHandler : IRequestHandler<GenerateAnswerCommand, GenerateAnswerResponse>
     {
-        private readonly IChatRepository _chatRepository;
-        private readonly IChatService _chatService;
+        private readonly IChatbotRepository _chatbotRepository;
+        private readonly IChatbotService _chatbotService;
 
-        public GenerateAnswerCommadHandler(IChatRepository chatRepository, IChatService chatService)
+        public GenerateAnswerCommadHandler(IChatbotRepository chatRepository, IChatbotService chatService)
         {
-            _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
-            _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
+            _chatbotRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
+            _chatbotService = chatService ?? throw new ArgumentNullException(nameof(chatService));
         }
 
         public async Task<GenerateAnswerResponse> Handle(GenerateAnswerCommand request, CancellationToken cancellationToken)
@@ -28,20 +28,20 @@ namespace ChatbotAI.API.Application.Command.GenerateAnswer
                 throw new DomainException("Nie rozpoznano pytania");
             }
 
-            var answer = await _chatService.GenerateRandomAnswerAsync();
+            var answer = await _chatbotService.GenerateRandomAnswerAsync();
 
-            var chat = new ChatInteraction()
+            var chatbot = new ChatbotInteraction()
             {
                 AnswerContent = string.Join("\n\n", answer),
                 QuestionContent = question.Content,
                 CreatedAt = DateTime.UtcNow,
             };
 
-            await _chatRepository.AddAsync(chat);
+            await _chatbotRepository.AddAsync(chatbot);
 
             var response = new GenerateAnswerResponse()
             {
-                Id = chat.Id,
+                Id = chatbot.Id,
                 Question = question.Content,
                 SectionList = answer
             };

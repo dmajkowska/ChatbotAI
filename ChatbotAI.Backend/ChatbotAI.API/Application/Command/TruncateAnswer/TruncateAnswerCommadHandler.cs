@@ -8,11 +8,11 @@ namespace ChatbotAI.API.Application.Command.TruncateAnswer
 {
     public class TruncateAnswerCommadHandler : IRequestHandler<TruncateAnswerCommand>
     {
-        private readonly IChatRepository _chatRepository;
+        private readonly IChatbotRepository _chatbotRepository;
 
-        public TruncateAnswerCommadHandler(IChatRepository chatRepository, IChatService chatService)
+        public TruncateAnswerCommadHandler(IChatbotRepository chatRepository, IChatbotService chatService)
         {
-            _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
+            _chatbotRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
         }
 
         public async Task Handle(TruncateAnswerCommand request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ namespace ChatbotAI.API.Application.Command.TruncateAnswer
                 throw new DomainException("Nieznane parametry dla przerwania wyświetlania odpowiedzi.");
             }
 
-            await _chatRepository.TruncateAnswerAsync(truncateParameters.Id, truncateParameters.DisplayedCharactersCount);
+            await _chatbotRepository.TruncateAnswerAsync(truncateParameters.Id, truncateParameters.DisplayedCharactersCount);
         }
     }
 }

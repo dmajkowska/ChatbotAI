@@ -4,18 +4,20 @@ using ChatbotAI.API.Application.Command.TruncateAnswer;
 using ChatbotAI.API.Contract.GenerateAnswer;
 using ChatbotAI.API.Contract.RateAnswer;
 using ChatbotAI.API.Contract.TruncateAnswer;
+using ChatbotAI.API.Infrastructure.Hubs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ChatbotAI.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ChatController: ControllerBase
+    public class ChatbotController: ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public ChatController(IMediator mediator)
+        public ChatbotController(IMediator mediator)
         {
             _mediator = mediator;
         }

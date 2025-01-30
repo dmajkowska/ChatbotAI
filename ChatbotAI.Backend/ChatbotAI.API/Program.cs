@@ -1,9 +1,11 @@
+using ChatbotAI.API.Application.Services;
 using ChatbotAI.API.Domain.Interfaces.Repositories;
 using ChatbotAI.API.Domain.Interfaces.Services;
 using ChatbotAI.API.Infrastructure;
+using ChatbotAI.API.Infrastructure.Hubs;
 using ChatbotAI.API.Infrastructure.Persistance;
 using ChatbotAI.API.Infrastructure.Persistance.Repositories;
-using ChatbotAI.API.Infrastructure.Persistance.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,14 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IChatRepository, ChatRepository>();
-builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IChatbotRepository, ChatbotRepository>();
+builder.Services.AddScoped<IChatbotService, ChatbotService>();
 
 builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -42,8 +45,13 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.EnsureCreated();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ChatbotDbContext>();
+
+    if (app.Environment.IsDevelopment())
+    {
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
+    }
 }
 
 if (!app.Environment.IsDevelopment())
@@ -73,5 +81,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowClient");
+
+app.MapHub<ChatbotHub>("/chatBotHub");
 
 app.Run();

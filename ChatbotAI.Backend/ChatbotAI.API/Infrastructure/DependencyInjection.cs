@@ -9,10 +9,10 @@ namespace ChatbotAI.API.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<ChatbotDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
+            services.AddScoped(typeof(IChatbotRepository), typeof(ChatbotRepository));
 
             return services;
         }

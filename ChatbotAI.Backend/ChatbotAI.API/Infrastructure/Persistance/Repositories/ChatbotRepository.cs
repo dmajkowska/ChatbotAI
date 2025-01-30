@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChatbotAI.API.Infrastructure.Persistance.Repositories
 {
-    public class ChatRepository : IChatRepository
+    public class ChatbotRepository : IChatbotRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ChatbotDbContext _context;
 
-        public ChatRepository(ApplicationDbContext context)
+        public ChatbotRepository(ChatbotDbContext context)
         {
             _context = context;
         }
 
-        public async Task AddAsync(ChatInteraction chat)
+        public async Task AddAsync(ChatbotInteraction chat)
         {
             _context.ChatInteractions.Add(chat);
             await _context.SaveChangesAsync();
@@ -21,7 +21,7 @@ namespace ChatbotAI.API.Infrastructure.Persistance.Repositories
 
         public async Task UpdateRatingAsync(int id, bool? newRating)
         {
-            var chat = new ChatInteraction { Id = id, Rating = newRating };
+            var chat = new ChatbotInteraction { Id = id, Rating = newRating };
 
             _context.Attach(chat);
             _context.Entry(chat).Property(x => x.Rating).IsModified = true;
@@ -31,7 +31,7 @@ namespace ChatbotAI.API.Infrastructure.Persistance.Repositories
 
         public async Task TruncateAnswerAsync(int id, int displayedCharactersCount)
         {
-            var chat = new ChatInteraction { Id = id, InterrupteddAt = DateTime.UtcNow };
+            var chat = new ChatbotInteraction { Id = id, InterrupteddAt = DateTime.UtcNow };
 
             _context.Attach(chat);
             _context.Entry(chat).Property(x => x.Rating).IsModified = true;

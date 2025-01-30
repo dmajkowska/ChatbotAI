@@ -1,4 +1,4 @@
-export interface IChatPair
+export interface IChatbotPair
 {
     id: number;
     question: string;

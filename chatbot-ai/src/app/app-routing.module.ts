@@ -1,18 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ChatContainerComponent } from './components/chat-container/chat-container.component';
-import { ChatHeaderComponent } from './components/chat-container/chat-header/chat-header.component';
+import { ChatbotContainerComponent } from './components/chatbot-container/chatbot-container.component';
 
 const routes: Routes = [];
 
 @NgModule({
   imports: [
     RouterModule.forRoot(routes),
-    ChatContainerComponent,
+    ChatbotContainerComponent,
   ],
   exports: [
     RouterModule,
-    ChatContainerComponent,
+    ChatbotContainerComponent,
   ],
   declarations: []
 })
