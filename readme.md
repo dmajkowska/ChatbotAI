@@ -28,12 +28,12 @@ Chatbot-AI to aplikacja, która symuluje prostego asystenta AI. Dostępne funkcj
 * w celu zweryfikowania poprawności działania bazy danych uruchom Microsoft SQL Management Studio połącz się z serwerem bazy danych zgodnie z 
 * powinny się utworzyć baza danych o nazwie chatbot_dmajkowska zawierająca pustą tabelę dbo.chat
 * tabela dbo.chat powinna zawierać następujące kolumny oraz primary key 
-    *[id] [int] IDENTITY(1,1) NOT NULL,
-	*[question] [nvarchar](500) NOT NULL,
-	*[answer] [nvarchar](max) NOT NULL,
-	*[rating] [bit] NULL,
-	*[created] [datetime2](7) NOT NULL,
-	*[interrupted] [datetime2](7) NULL,
+  * [id] [int] IDENTITY(1,1) NOT NULL,
+  * [question] [nvarchar](500) NOT NULL,
+  * [answer] [nvarchar](max) NOT NULL,
+  * [rating] [bit] NULL,
+  * [created] [datetime2](7) NOT NULL,
+  * [interrupted] [datetime2](7) NULL,
 
 ## Uruchomienie frontendu
 
