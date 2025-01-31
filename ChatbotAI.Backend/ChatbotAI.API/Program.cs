@@ -1,8 +1,8 @@
 using ChatbotAI.API.Application.Services;
 using ChatbotAI.API.Domain.Interfaces.Repositories;
 using ChatbotAI.API.Domain.Interfaces.Services;
+using ChatbotAI.API.Hubs;
 using ChatbotAI.API.Infrastructure;
-using ChatbotAI.API.Infrastructure.Hubs;
 using ChatbotAI.API.Infrastructure.Persistance;
 using ChatbotAI.API.Infrastructure.Persistance.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -10,18 +10,26 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder.SetMinimumLevel(LogLevel.Debug);
+    builder.AddConsole();
+});
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IChatbotRepository, ChatbotRepository>();
-builder.Services.AddScoped<IChatbotService, ChatbotService>();
+builder.Services.AddSingleton<IChatbotService, ChatbotService>();
 
 builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
 
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -37,21 +45,19 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClient",
         policy => policy.WithOrigins("http://localhost:4200")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
 });
 
 var app = builder.Build();
+
 
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ChatbotDbContext>();
 
-    if (app.Environment.IsDevelopment())
-    {
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
-    }
+    dbContext.Database.Migrate();
 }
 
 if (!app.Environment.IsDevelopment())
@@ -60,15 +66,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.MapControllers();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-app.UseRouting();
-
+app.UseCors("AllowClient");  
+app.UseRouting();           
 app.UseAuthorization();
 
+app.MapControllers();
+app.MapHub<ChatbotHub>("/chatBotHub");  // SignalR
 app.MapRazorPages();
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -80,8 +88,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowClient");
 
-app.MapHub<ChatbotHub>("/chatBotHub");
+
 
 app.Run();

@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { ChatbotService } from '../../../services/chatbot.service';
 import { GenerateAnswerResponse } from '../../../model/generate-answer/generate-answer.response';
 import { ChatbotInteraction } from './chatbot-interaction/chatbot-interaction.component';
 import { ChatbotNewQuestionAreaComponent } from './chatbot-new-question-area/chatbot-new-question-area.component';
 import { IChatbotPair } from '../../../model/chatbot-pair';
+import { filter, Observable } from 'rxjs';
 
 
 export type ChatbotState = "Sending" | "Waiting";
@@ -26,8 +27,25 @@ export type ChatbotState = "Sending" | "Waiting";
     public enableSendingQuestion: boolean = true;
     public state: ChatbotState = 'Sending';
     public isAnsweringStopped: boolean = false;
+    isAnswerComplete = false;
+    isAnswerTruncated = false;
 
     constructor(private chatbotService: ChatbotService) {}
+
+    ngOnInit() {
+      this.chatbotService.isAnswerComplete$.subscribe(isComplete => {
+        this.isAnswerComplete = isComplete;
+      });
+
+      this.chatbotService.isAnswerTruncated$.subscribe(isTruncated => {
+        this.isAnswerTruncated = isTruncated;
+
+        if(isTruncated) {
+          console.log("Przerwano");
+        }
+        
+      });
+    }
 
     ngAfterViewInit() {
       this.setupMutationObserver();
@@ -61,61 +79,70 @@ export type ChatbotState = "Sending" | "Waiting";
 
   onStopAnsweringButtonClicked() {
     this.isAnsweringStopped = true;
+    const currentAnswerId = this.entries[this.entries.length - 1].id;
+    if (!currentAnswerId) return;
+
+    this.chatbotService.stopAnswer(currentAnswerId);
   }
 
 
   async pushChatbotPair(response: GenerateAnswerResponse) {
-    this.state = 'Waiting';
     this.isAnsweringStopped = false;
 
     const entry: IChatbotPair = {
       id: response.id,
       question: response.question,
-      answer: [],
+      answer: [''],
       rating: undefined
     };
 
     this.entries.push(entry);
-
-    let charCount = 0;
-    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-    for (let sectionIndex = 0; sectionIndex < response.sectionList.length; sectionIndex++) {
-      this.entries[this.entries.length - 1].answer.push('');
-      for (const char of response.sectionList[sectionIndex]) {
-        if (this.isAnsweringStopped) break;
-        this.entries[this.entries.length - 1].answer[sectionIndex] += char;
-        charCount++;
-        await delay(10);
-      }
-      if (this.isAnsweringStopped) break;
-      charCount += 2; // Dodajemy 2 znaki za "\n\n"
-      await delay(500); // Pauza między sekcjami
-    }
-
-    if(this.isAnsweringStopped) {
-      this.chatbotService.truncateAnswer(entry.id, charCount).subscribe({
-        next: () => console.log('Operacja przerwana!'),
-        error: (err) => console.error('Błąd:', err)
-      });
-      this.isAnsweringStopped = false;
-    }
-    this.state = 'Sending';
 }
 
-  sendMessage(question: string) {
-    if (!question.trim()) return;
-    this.chatbotService.generateAnswer(question).subscribe({
-      next: (response) => {
-        this.pushChatbotPair(response);
-      } ,
-      error: (err) => console.error('Błąd:', err),
-    });
-  }
+async patchAnswer(newValue: {id: number, piece: string}) {
+  if(newValue.piece == '\n\n') {
+    this.entries[this.entries.length - 1].answer.push("");
+  } 
+  else {
+    const lastEntry = this.entries[this.entries.length - 1];
+    lastEntry.answer[lastEntry.answer.length - 1] += newValue.piece;
+  } 
+
+  this.scrollToBottom();
+
+}
+
+getFirstData(question: string): Observable<GenerateAnswerResponse> {
+  return this.chatbotService.generateAnswer(question);
+}
+
+
+getSecondData(id: number): Observable<{ id: number; piece: string }> {
+  return this.chatbotService.receivedMessages$.pipe(
+    filter(msg => msg !== null && msg.id === id)
+  );
+}
+    
+
+    sendMessage(question: string) {
+      if (!question.trim()) return;
+
+      this.chatbotService.resetAnswerComplete();
+
+      this.getFirstData(question).subscribe(firstResult => {
+        this.pushChatbotPair(firstResult);
+    
+        this.getSecondData(firstResult.id).subscribe(secondResult => {
+          if(secondResult.id === firstResult.id) {
+            this.patchAnswer(secondResult);
+          }
+        });
+      });
+    }
 
 private scrollToBottom() {
     setTimeout(() => {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    }, 0);
+    }, 100);
   }
 }

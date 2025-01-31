@@ -4,7 +4,7 @@
   </ng-container>
 </mat-card-content>
 <mat-card-footer>
-  <chatbot-new-question-area [state]=state 
+  <chatbot-new-question-area [state]= "isAnswerComplete || isAnswerTruncated ? 'Sending' : 'Waiting'" 
       (sendButtonClicked)="onSendQuestionButtonClicked($event)" 
       (stopButtonClicked)="onStopAnsweringButtonClicked()">
   </chatbot-new-question-area>

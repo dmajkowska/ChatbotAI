@@ -1,10 +1,33 @@
 ﻿using ChatbotAI.API.Domain.Interfaces.Services;
 using LoremNET;
+using System.Collections.Concurrent;
 
 namespace ChatbotAI.API.Application.Services
 {
     public class ChatbotService : IChatbotService
     {
+        private readonly ConcurrentDictionary<int, bool> _stoppedResponses = new();
+
+        public ChatbotService()
+        {
+            
+        }
+
+        public async Task StopAnswer(int id)
+        {
+            _stoppedResponses[id] = true;
+        }
+
+        public bool IsAnswerStopped(int id)
+        {
+            return _stoppedResponses.TryGetValue(id, out bool isStopped) && isStopped;
+        }
+
+        public void RemoveStoppedAnswer(int id)
+        {
+            _stoppedResponses.TryRemove(id, out _);
+        }
+
         public async Task<List<string>> GenerateRandomAnswerAsync()
         {
             Random random = new Random();
