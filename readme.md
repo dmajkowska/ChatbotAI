@@ -1,4 +1,4 @@
-# Chatbot-AI
+# Chatbot-AIv
 
 Chatbot-AI to aplikacja, która symuluje prostego asystenta AI. Dostępne funkcjonalności:
 * wyświetlanie historii chatu
@@ -13,6 +13,15 @@ Chatbot-AI to aplikacja, która symuluje prostego asystenta AI. Dostępne funkcj
 * zainstalowane Node.js v20.16.0
 * zainstalowane npm v11.0.0
 
+## Inicjalizacja bazy danych
+
+* Jeszcze przed uruchomieniu backendu należy utworzyć lub zaktualizować bazę danych
+* W tym celu twórz plik appsettings.json w projekcie ChatbotAI.Backend\ChatbotAI.API i zedytuj wartość ConnectionStrings/DefaultConnection zgodnie z ustawieniami serwera bazy danych
+* Następnie z linii poleceń udajemy się do katalogu ChatbotAI.Backend\ChatbotAI.API i uruchamiamy komendę:
+```bash
+dotnet ef database update
+```
+* Baza danych powinna się poprawnie utworzyć
 
 ## Uruchomienie backendu
 
@@ -22,22 +31,10 @@ Chatbot-AI to aplikacja, która symuluje prostego asystenta AI. Dostępne funkcj
 * uruchom aplikację
 * otwórz Swagger API w przeglądarce internetowej https://localhost:7004/index.html
 
-## Inicjalizacja bazy danych
-
-* Po uruchomieniu backendu baza powinna utworzyć się automatycznie, nic nie trzeba dodatkowo robić
-* w celu zweryfikowania poprawności działania bazy danych uruchom Microsoft SQL Management Studio połącz się z serwerem bazy danych zgodnie z 
-* powinny się utworzyć baza danych o nazwie chatbot_dmajkowska zawierająca pustą tabelę dbo.chatbot
-* tabela dbo.chatbot powinna zawierać następujące kolumny oraz primary key 
-  * [id] [int] IDENTITY(1,1) NOT NULL,
-  * [question] [nvarchar](500) NOT NULL,
-  * [answer] [nvarchar](max) NOT NULL,
-  * [rating] [bit] NULL,
-  * [created] [datetime2](7) NOT NULL,
-  * [interrupted] [datetime2](7) NULL,
 
 ## Uruchomienie frontendu
 
-* uruchamy consolę za pomocą komendy cmd
+* uruchamy consolę za pomocą komendy w linii poleceń
 ```bash
 npm install
 npm run build
