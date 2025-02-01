@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { ChatbotService } from '../../../services/chatbot.service';
-import { GenerateAnswerResponse } from '../../../model/generate-answer/generate-answer.response';
+import { InteractWithChatbotResponse } from '../../../model/interact-with-chatbot/interact-with-chatbot.response';
 import { ChatbotInteraction } from './chatbot-interaction/chatbot-interaction.component';
 import { ChatbotNewQuestionAreaComponent } from './chatbot-new-question-area/chatbot-new-question-area.component';
 import { IChatbotPair } from '../../../model/chatbot-pair';
@@ -19,59 +19,59 @@ export type ChatbotState = "Sending" | "Waiting";
     imports: [MatCardModule, CommonModule,ChatbotInteraction, ChatbotNewQuestionAreaComponent ]
   })
 
-  export class ChatbotConversationComponent {
-    @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef;
-    private isUserScrolling = false;
-    private observer!: MutationObserver;
-    public  entries: IChatbotPair[] = [];
-    public enableSendingQuestion: boolean = true;
-    public state: ChatbotState = 'Sending';
-    public isAnsweringStopped: boolean = false;
-    isAnswerComplete = false;
-    isAnswerTruncated = false;
+export class ChatbotConversationComponent {
+  @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef;
+  private isUserScrolling = false;
+  private observer!: MutationObserver;
+  public  entries: IChatbotPair[] = [];
+  public enableSendingQuestion: boolean = true;
+  public state: ChatbotState = 'Sending';
+  public isAnsweringStopped: boolean = false;
+  isAnswerComplete = false;
+  isAnswerTruncated = false;
 
-    constructor(private chatbotService: ChatbotService) {}
+  constructor(private chatbotService: ChatbotService) {}
 
-    ngOnInit() {
-      this.chatbotService.isAnswerComplete$.subscribe(isComplete => {
-        this.isAnswerComplete = isComplete;
-      });
+  ngOnInit() {
+    this.chatbotService.isAnswerComplete$.subscribe(isComplete => {
+      this.isAnswerComplete = isComplete;
+    });
 
-      this.chatbotService.isAnswerTruncated$.subscribe(isTruncated => {
-        this.isAnswerTruncated = isTruncated;
+    this.chatbotService.isAnswerTruncated$.subscribe(isTruncated => {
+      this.isAnswerTruncated = isTruncated;
 
-        if(isTruncated) {
-          console.log("Przerwano");
-        }
-        
-      });
-    }
+      if(isTruncated) {
+        console.log("Przerwano");
+      }
+      
+    });
+  }
 
-    ngAfterViewInit() {
-      this.setupMutationObserver();
-      this.setupScrollListener();
-    }
+  ngAfterViewInit() {
+    this.setupMutationObserver();
+    this.setupScrollListener();
+  }
 
-    private setupMutationObserver() {
-      if (typeof MutationObserver === 'undefined') return; 
-  
-      this.observer = new MutationObserver(() => {
-        if (!this.isUserScrolling) {
-          this.scrollToBottom();
-        }
-      });
-  
-      this.observer.observe(this.scrollContainer.nativeElement, { childList: true, subtree: true });
-    }
-  
-    private setupScrollListener() {
-      const container = this.scrollContainer.nativeElement;
-      container.addEventListener('scroll', () => {
-        const isAtBottom =
-          container.scrollHeight - container.scrollTop <= container.clientHeight + 10;
-        this.isUserScrolling = !isAtBottom; 
-      });
-    }
+  private setupMutationObserver() {
+    if (typeof MutationObserver === 'undefined') return; 
+
+    this.observer = new MutationObserver(() => {
+      if (!this.isUserScrolling) {
+        this.scrollToBottom();
+      }
+    });
+
+    this.observer.observe(this.scrollContainer.nativeElement, { childList: true, subtree: true });
+  }
+
+  private setupScrollListener() {
+    const container = this.scrollContainer.nativeElement;
+    container.addEventListener('scroll', () => {
+      const isAtBottom =
+        container.scrollHeight - container.scrollTop <= container.clientHeight + 10;
+      this.isUserScrolling = !isAtBottom; 
+    });
+  }
 
   onSendQuestionButtonClicked(question: string) {
     this.sendMessage(question);
@@ -86,7 +86,7 @@ export type ChatbotState = "Sending" | "Waiting";
   }
 
 
-  async pushChatbotPair(response: GenerateAnswerResponse) {
+  async pushChatbotPair(response: InteractWithChatbotResponse) {
     this.isAnsweringStopped = false;
 
     const entry: IChatbotPair = {
@@ -97,50 +97,49 @@ export type ChatbotState = "Sending" | "Waiting";
     };
 
     this.entries.push(entry);
-}
+  }
 
-async patchAnswer(newValue: {id: number, piece: string}) {
-  if(newValue.piece == '\n\n') {
-    this.entries[this.entries.length - 1].answer.push("");
-  } 
-  else {
-    const lastEntry = this.entries[this.entries.length - 1];
-    lastEntry.answer[lastEntry.answer.length - 1] += newValue.piece;
-  } 
+  async patchAnswer(newValue: {id: number, piece: string}) {
+    if(newValue.piece == '\n\n') {
+      this.entries[this.entries.length - 1].answer.push("");
+    } 
+    else {
+      const lastEntry = this.entries[this.entries.length - 1];
+      lastEntry.answer[lastEntry.answer.length - 1] += newValue.piece;
+    } 
 
-  this.scrollToBottom();
+    this.scrollToBottom();
+  }
 
-}
-
-getFirstData(question: string): Observable<GenerateAnswerResponse> {
-  return this.chatbotService.generateAnswer(question);
-}
+  getFirstData(question: string): Observable<InteractWithChatbotResponse> {
+    return this.chatbotService.interactWithChatbot(question);
+  }
 
 
-getSecondData(id: number): Observable<{ id: number; piece: string }> {
-  return this.chatbotService.receivedMessages$.pipe(
-    filter(msg => msg !== null && msg.id === id)
-  );
-}
-    
+  getSecondData(id: number): Observable<{ id: number; piece: string }> {
+    return this.chatbotService.receivedMessages$.pipe(
+      filter(msg => msg !== null && msg.id === id)
+    );
+  }
 
-    sendMessage(question: string) {
-      if (!question.trim()) return;
 
-      this.chatbotService.resetAnswerComplete();
+  sendMessage(question: string) {
+    if (!question.trim()) return;
 
-      this.getFirstData(question).subscribe(firstResult => {
-        this.pushChatbotPair(firstResult);
-    
-        this.getSecondData(firstResult.id).subscribe(secondResult => {
-          if(secondResult.id === firstResult.id) {
-            this.patchAnswer(secondResult);
-          }
-        });
+    this.chatbotService.resetAnswerComplete();
+
+    this.getFirstData(question).subscribe(firstResult => {
+      this.pushChatbotPair(firstResult);
+
+      this.getSecondData(firstResult.id).subscribe(secondResult => {
+        if(secondResult.id === firstResult.id) {
+          this.patchAnswer(secondResult);
+        }
       });
-    }
+    });
+  }
 
-private scrollToBottom() {
+  private scrollToBottom() {
     setTimeout(() => {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
     }, 100);

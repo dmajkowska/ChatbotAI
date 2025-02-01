@@ -1,4 +1,4 @@
-export interface GenerateAnswerResponse {
+export interface InteractWithChatbotResponse {
     id: number;
     question: string;
     sectionList: string[];

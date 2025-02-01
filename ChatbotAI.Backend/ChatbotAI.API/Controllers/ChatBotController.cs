@@ -1,14 +1,14 @@
-﻿using ChatbotAI.API.Application.Command.GenerateAnswer;
+﻿using ChatbotAI.API.Application.Command.AddChatbotInteraction;
 using ChatbotAI.API.Application.Command.RateAnswer;
-using ChatbotAI.API.Application.Command.TruncateAnswer;
-using ChatbotAI.API.Contract.GenerateAnswer;
+using ChatbotAI.API.Application.Command.SaveAnswer;
+using ChatbotAI.API.Contract.InteractWithChatbot;
 using ChatbotAI.API.Contract.RateAnswer;
-using ChatbotAI.API.Contract.TruncateAnswer;
 using ChatbotAI.API.Domain.Interfaces.Services;
 using ChatbotAI.API.Hubs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Text;
 
 namespace ChatbotAI.API.Controllers
 {
@@ -19,64 +19,88 @@ namespace ChatbotAI.API.Controllers
         private readonly IMediator _mediator;
         private readonly IHubContext<ChatbotHub> _hubContext;
         private readonly IChatbotService _chatbotService;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        public ChatbotController(IChatbotService chatbotService, IMediator mediator, IHubContext<ChatbotHub> hubContext)
+        public ChatbotController(IChatbotService chatbotService, IMediator mediator, IHubContext<ChatbotHub> hubContext, IServiceScopeFactory serviceScopeFactory)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
             _chatbotService = chatbotService ?? throw new ArgumentNullException(nameof(chatbotService));
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         [HttpPost]
-        public async Task<ActionResult<GenerateAnswerResponse>> GenerateAnswer(GenerateAnswerRequest request)
+        public async Task<ActionResult<InteractWithChatbotResponse>> InteractWithChatbot(InteractWithChatbotRequest request)
         {
-            var query = new GenerateAnswerCommand
+            var addChatbotCommand = new AddChatbotInteractionCommand
             {
                 Question = request.Question,
             };
 
-            var result = await _mediator.Send(query);
+            var saveInteractionResult = await _mediator.Send(addChatbotCommand);
 
             _ = Task.Run(async () =>
             {
-                for (int i = 0; i <= result.SectionList.Count - 1; i++)
+                var answerBuilder = new StringBuilder();
+                var saveAnswerCommand = new SaveAnswerCommand()
                 {
-                    if (_chatbotService.IsAnswerStopped(result.Id))
+                    Id = saveInteractionResult.Id,
+                };
+
+                for (int i = 0; i <= saveInteractionResult.SectionList.Count - 1; i++)
+                {
+                    if (_chatbotService.IsAnswerStopped(saveInteractionResult.Id))
                     {
                         break;
                     }
-                    foreach (var character in result.SectionList[i])
+                    foreach (var character in saveInteractionResult.SectionList[i])
                     {
-                        if (_chatbotService.IsAnswerStopped(result.Id))
+                        if (_chatbotService.IsAnswerStopped(saveInteractionResult.Id))
                         {
                             break;
                         }
-                        await _hubContext.Clients.All.SendAsync("ReceiveAnswerPiece", result.Id, character.ToString());
+                        answerBuilder.Append(character);
+                        await _hubContext.Clients.All.SendAsync("ReceiveAnswerPiece", saveInteractionResult.Id, character.ToString());
                         await Task.Delay(10);
                     }
-                    
-                    if(i != result.SectionList.Count - 1)
+
+                    if (i != saveInteractionResult.SectionList.Count - 1)
                     {
-                        await _hubContext.Clients.All.SendAsync("ReceiveAnswerPiece", result.Id, "\n\n");
+                        await _hubContext.Clients.All.SendAsync("ReceiveAnswerPiece", saveInteractionResult.Id, "\n\n");
+                        answerBuilder.Append("\n\n");
                         await Task.Delay(10);
                     }
-                    
+
                 }
 
-                if (_chatbotService.IsAnswerStopped(result.Id))
+                if (_chatbotService.IsAnswerStopped(saveInteractionResult.Id))
                 {
-                    await _hubContext.Clients.All.SendAsync("ReceiveAnswerTruncated", result.Id);
-                } else
-                {
-                    await _hubContext.Clients.All.SendAsync("ReceiveAnswerComplete", result.Id);
+                    saveAnswerCommand.IsInterupted = true;
+
+                    await _hubContext.Clients.All.SendAsync("ReceiveAnswerTruncated", saveInteractionResult.Id);
+
+
                 }
-                
-                _chatbotService.RemoveStoppedAnswer(result.Id);
+                else
+                {
+                    await _hubContext.Clients.All.SendAsync("ReceiveAnswerComplete", saveInteractionResult.Id);
+                }
+
+                saveAnswerCommand.AnswerContent = answerBuilder.ToString();
+                Console.WriteLine("Sending command to Mediator.");
+
+
+                using var scope = _serviceScopeFactory.CreateScope();
+                var sender = scope.ServiceProvider.GetRequiredService<ISender>();
+                await sender.Send(saveAnswerCommand);
+
+
+                _chatbotService.RemoveStoppedAnswer(saveInteractionResult.Id);
             });
 
-            var response = new GenerateAnswerResponse()
+            var response = new InteractWithChatbotResponse()
             {
-                Id = result.Id,
+                Id = saveInteractionResult.Id,
                 Question = request.Question,
                 SectionList = new List<string>()
             };
@@ -94,22 +118,6 @@ namespace ChatbotAI.API.Controllers
             {
                 Id = request.Id,
                 Rating = request.Rating
-            };
-
-            await _mediator.Send(query);
-
-            return Ok();
-        }
-
-        [HttpPost]
-        [Route("Truncate")]
-
-        public async Task<IActionResult> TruncateAnswer([FromBody] TruncateAnswerRequest request)
-        {
-            var query = new TruncateAnswerCommand
-            {
-                Id = request.Id,
-                DisplayedCharactersCount = request.DisplayedCharactersCount
             };
 
             await _mediator.Send(query);

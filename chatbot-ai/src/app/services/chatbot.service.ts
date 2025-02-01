@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GenerateAnswerResponse } from '../model/generate-answer/generate-answer.response';
+import { InteractWithChatbotResponse } from '../model/interact-with-chatbot/interact-with-chatbot.response';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
 import { HttpTransportType, HubConnectionBuilder } from '@microsoft/signalr';
@@ -72,16 +72,11 @@ export class ChatbotService {
     this.isAnswerComplete.next(false); 
   }
 
-  generateAnswer(question: string): Observable<GenerateAnswerResponse> {
-    return this.http.post<GenerateAnswerResponse>(`${this.apiUrl}`, { question });
+  interactWithChatbot(question: string): Observable<InteractWithChatbotResponse> {
+    return this.http.post<InteractWithChatbotResponse>(`${this.apiUrl}`, { question });
   }
 
   rateAnswer(id: number, rating?: boolean): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/rate`, { id, rating });
   }
-
-  truncateAnswer(id: number, displayedCharactersCount: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/truncate`, { id, displayedCharactersCount });
-  }
-
 }

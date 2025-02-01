@@ -8,7 +8,7 @@ namespace ChatbotAI.API.Infrastructure.Persistance
     {
         public ChatbotDbContext(DbContextOptions<ChatbotDbContext> options) : base(options) { }
 
-        public DbSet<ChatbotInteraction> ChatInteractions { get; set; }
+        public DbSet<ChatbotInteraction> ChatbotInteractions { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
