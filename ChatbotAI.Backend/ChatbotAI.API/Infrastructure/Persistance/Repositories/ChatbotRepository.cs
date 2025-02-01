@@ -1,6 +1,5 @@
 ﻿using ChatbotAI.API.Domain.Entities.Persistence;
 using ChatbotAI.API.Domain.Interfaces.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChatbotAI.API.Infrastructure.Persistance.Repositories
 {

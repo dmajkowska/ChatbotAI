@@ -8,10 +8,7 @@ namespace ChatbotAI.API.Application.Services
     {
         private readonly ConcurrentDictionary<int, bool> _stoppedResponses = new();
 
-        public ChatbotService()
-        {
-            
-        }
+        public ChatbotService() {}
 
         public async Task StopAnswer(int id)
         {

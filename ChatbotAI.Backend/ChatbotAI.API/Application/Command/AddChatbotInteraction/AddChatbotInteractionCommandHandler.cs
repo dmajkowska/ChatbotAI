@@ -4,7 +4,6 @@ using ChatbotAI.API.Domain.Entities.DomainOnly;
 using ChatbotAI.API.Domain.Entities.Persistence;
 using ChatbotAI.API.Domain.Exceptions;
 using ChatbotAI.API.Domain.Interfaces.Repositories;
-using ChatbotAI.API.Domain.Interfaces.Services;
 using MediatR;
 
 namespace ChatbotAI.API.Application.Command.AddChatbotInteraction

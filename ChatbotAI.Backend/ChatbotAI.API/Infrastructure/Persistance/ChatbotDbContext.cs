@@ -1,5 +1,4 @@
-﻿using ChatbotAI.API.Domain.Entities.DomainOnly;
-using ChatbotAI.API.Domain.Entities.Persistence;
+﻿using ChatbotAI.API.Domain.Entities.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatbotAI.API.Infrastructure.Persistance

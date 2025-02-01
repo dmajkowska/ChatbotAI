@@ -77,7 +77,7 @@ namespace ChatbotAI.API.Controllers
                 {
                     saveAnswerCommand.IsInterupted = true;
 
-                    await _hubContext.Clients.All.SendAsync("ReceiveAnswerTruncated", saveInteractionResult.Id);
+                    await _hubContext.Clients.All.SendAsync("ReceiveAnswerInterrupted", saveInteractionResult.Id);
 
 
                 }

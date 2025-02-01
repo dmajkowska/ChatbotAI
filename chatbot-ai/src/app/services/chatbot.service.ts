@@ -20,9 +20,9 @@ export class ChatbotService {
   receivedMessages$ = this.receivedMessages.asObservable();
 
   private isAnswerComplete = new BehaviorSubject<boolean>(true); 
-  private isAnswerTruncated = new BehaviorSubject<boolean>(false); 
+  private isAnswerInterrupted = new BehaviorSubject<boolean>(false); 
   isAnswerComplete$ = this.isAnswerComplete.asObservable(); 
-  isAnswerTruncated$ = this.isAnswerTruncated.asObservable(); 
+  isAnswerInterrupted$ = this.isAnswerInterrupted.asObservable(); 
   
   constructor(private http: HttpClient) {
     this.hubConnection = new HubConnectionBuilder()
@@ -53,12 +53,12 @@ export class ChatbotService {
 
       this.hubConnection.on('ReceiveAnswerComplete', (id: number) => {
         this.isAnswerComplete.next(true); 
-        this.isAnswerTruncated.next(false)
+        this.isAnswerInterrupted.next(false)
       });
 
-      this.hubConnection.on('ReceiveAnswerTruncated', (id: number) => {
+      this.hubConnection.on('ReceiveAnswerInterrupted', (id: number) => {
         this.isAnswerComplete.next(true); 
-        this.isAnswerTruncated.next(true)
+        this.isAnswerInterrupted.next(true)
       });
   }
 

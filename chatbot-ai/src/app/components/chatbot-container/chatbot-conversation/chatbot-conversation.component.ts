@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { ChatbotService } from '../../../services/chatbot.service';
 import { InteractWithChatbotResponse } from '../../../model/interact-with-chatbot/interact-with-chatbot.response';
@@ -28,7 +28,7 @@ export class ChatbotConversationComponent {
   public state: ChatbotState = 'Sending';
   public isAnsweringStopped: boolean = false;
   isAnswerComplete = false;
-  isAnswerTruncated = false;
+  isAnswerInterrupted = false;
 
   constructor(private chatbotService: ChatbotService) {}
 
@@ -37,10 +37,10 @@ export class ChatbotConversationComponent {
       this.isAnswerComplete = isComplete;
     });
 
-    this.chatbotService.isAnswerTruncated$.subscribe(isTruncated => {
-      this.isAnswerTruncated = isTruncated;
+    this.chatbotService.isAnswerInterrupted$.subscribe(isInterrupted  => {
+      this.isAnswerInterrupted = isInterrupted ;
 
-      if(isTruncated) {
+      if(isInterrupted ) {
         console.log("Przerwano");
       }
       
@@ -111,12 +111,12 @@ export class ChatbotConversationComponent {
     this.scrollToBottom();
   }
 
-  getFirstData(question: string): Observable<InteractWithChatbotResponse> {
+  getQuestion(question: string): Observable<InteractWithChatbotResponse> {
     return this.chatbotService.interactWithChatbot(question);
   }
 
 
-  getSecondData(id: number): Observable<{ id: number; piece: string }> {
+  getAnswerPieces(id: number): Observable<{ id: number; piece: string }> {
     return this.chatbotService.receivedMessages$.pipe(
       filter(msg => msg !== null && msg.id === id)
     );
@@ -128,10 +128,10 @@ export class ChatbotConversationComponent {
 
     this.chatbotService.resetAnswerComplete();
 
-    this.getFirstData(question).subscribe(firstResult => {
+    this.getQuestion(question).subscribe(firstResult => {
       this.pushChatbotPair(firstResult);
 
-      this.getSecondData(firstResult.id).subscribe(secondResult => {
+      this.getAnswerPieces(firstResult.id).subscribe(secondResult => {
         if(secondResult.id === firstResult.id) {
           this.patchAnswer(secondResult);
         }

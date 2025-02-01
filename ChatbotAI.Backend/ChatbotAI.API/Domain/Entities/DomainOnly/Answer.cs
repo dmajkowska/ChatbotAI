@@ -11,18 +11,10 @@ namespace ChatbotAI.API.Domain.Entities.DomainOnly
         public Answer(AnswerProperties properties)
         {
             if (properties.Id <= 0) throw new DomainException("Identyfikator nie może być ujemny ani równy zero.");
-            if (properties.AnswerContent.Length < 3) throw new DomainException("Odpowiedź jest za krótka.");
-            if (ContainsBadWords(properties.AnswerContent)) throw new DomainException("Odpowiedź zawiera niedozwolone słowa.");
 
             Id = properties.Id;
             AnswerContent = properties.AnswerContent;
             IsInterrupted = properties.IsInterrupted;
-        }
-
-        private bool ContainsBadWords(string question)
-        {
-            var badWords = new[] { "brzydkieslowo1", "brzydkieslowo2" };
-            return badWords.Any(question.ToLower().Contains);
         }
     }
 
