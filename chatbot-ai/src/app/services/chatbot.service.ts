@@ -10,7 +10,7 @@ import { HttpTransportType, HubConnectionBuilder } from '@microsoft/signalr';
   providedIn: 'root'
 })
 export class ChatbotService {
-  private hostUrl = 'https://localhost:7004'
+  private hostUrl = 'http://localhost:7004'
   private apiUrl = `${this.hostUrl}/api/chatbot`; 
   private hubUrl = `${this.hostUrl}/chatBotHub`;  
 

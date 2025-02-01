@@ -13,6 +13,7 @@ namespace ChatbotAI.API.Application.Services
         public async Task StopAnswer(int id)
         {
             _stoppedResponses[id] = true;
+            await Task.Yield();
         }
 
         public bool IsAnswerStopped(int id)
@@ -49,7 +50,7 @@ namespace ChatbotAI.API.Application.Services
                     break;
             }
 
-            return sectionList;
+            return await Task.FromResult(sectionList);
         }
         private enum TextSize
         {

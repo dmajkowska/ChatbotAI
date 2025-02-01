@@ -2,6 +2,6 @@
 {
     public class InteractWithChatbotRequest
     {
-        public string Question { get; set; }
+        public string Question { get; set; } = string.Empty;
     }
 }

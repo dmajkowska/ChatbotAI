@@ -29,7 +29,7 @@ dotnet ef database update
 * otwórz solucję ChatbotAI.Backend.sln z lokalizacji  ChatbotAI.Backend
 * otwórz plik appsettings.json w projekcie ChatbotAI.Backend\ChatbotAI.API i zedytuj wartość ConnectionStrings/DefaultConnection zgodnie z ustawieniami serwera bazy danych
 * uruchom aplikację
-* otwórz Swagger API w przeglądarce internetowej https://localhost:7004/index.html
+* otwórz Swagger API w przeglądarce internetowej http://localhost:7004/index.html
 
 
 ## Uruchomienie frontendu

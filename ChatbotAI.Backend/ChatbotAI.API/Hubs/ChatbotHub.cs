@@ -17,7 +17,7 @@ namespace ChatbotAI.API.Hubs
             await _chatbotService.StopAnswer(id);
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
             Console.WriteLine($"Użytkownik rozłączony: {Context.ConnectionId}, powód: {exception?.Message}");
             await base.OnDisconnectedAsync(exception);

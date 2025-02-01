@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public string Question { get; set; } = string.Empty;
-        public List<string> SectionList { get; set; }
+        public List<string> SectionList { get; set; } = new List<string>();
     }
 }
